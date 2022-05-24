@@ -24,8 +24,8 @@ const reportPerformance = () => {
     ({ metricsName, metricsValue, networkType, selectorName, rectDiff }) => {
       firebase
         .performance()
-        .trace(params.metricsName)
-        .record(startTime, params.metricsValue, {
+        .trace(metricsName)
+        .record(startTime, metricsValue, {
           selectorName,
           networkType,
           rectDiff,
@@ -34,7 +34,7 @@ const reportPerformance = () => {
     [option]
   );
 
-  import("../../helpers/performance").then(
+  import("@openameba/cwv-logger").then(
     ({ reportCLS, reportFID, reportLCP, reportTTFB }) => {
       reportCLS(handleReport);
       reportFID(handleReport);
