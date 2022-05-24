@@ -119,10 +119,9 @@ export const reportCLS: Report = (report) => {
     }
     const elementName = getElementName(largestSource.node);
     const rectDiff = getRectDiff(elementName, largestSource);
-    const customDelta = delta * 100;
     report({
       metricsName: name,
-      metricsValue: customDelta,
+      metricsValue: delta,
       selectorName: elementName,
       networkType: getNetworkType(),
       rectDiff,
