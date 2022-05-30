@@ -5,13 +5,13 @@
 ## Installation
 
 ```sh
-yarn add -D cwv-logger
+yarn add -D @openameba/cwv-logger
 ```
 
 or
 
 ```
-npm i --save-dev cwv-logger
+npm i --save-dev @openameba/cwv-logger
 ```
 
 ## Usage
