@@ -1,0 +1,8 @@
+src
+dist
+.gitignore
+jest.config.js
+bundlesize.config.json
+tsconfig.json
+design-doc.md
+setup-tests.ts
