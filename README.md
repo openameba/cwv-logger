@@ -34,6 +34,8 @@ const reportPerformance = () => {
     [option]
   );
 
+  // Logging is not critical for most application,
+  // so you can avoid loading this library in initial bundle by using dynamic import.
   import("@openameba/cwv-logger").then(
     ({ reportCLS, reportFID, reportLCP, reportTTFB }) => {
       reportCLS(handleReport);
