@@ -1,4 +1,4 @@
-export const SupportMetrics = {
+export const SupportedMetrics = {
   LCP: "LCP",
   CLS: "CLS",
   FID: "FID",
@@ -6,7 +6,7 @@ export const SupportMetrics = {
 } as const;
 
 export type ReportParams = {
-  metricsName: keyof typeof SupportMetrics;
+  metricsName: keyof typeof SupportedMetrics;
   metricsValue: number;
   networkType: string;
   country?: string;

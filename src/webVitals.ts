@@ -8,19 +8,19 @@ import {
   Metric as WebVitalsMetrics,
 } from "web-vitals";
 import { getElementName, getNetworkType } from "./base";
-import { ReportParams, SupportMetrics } from "./types";
+import { ReportParams, SupportedMetrics } from "./types";
 
 type BaseMetrics = Pick<WebVitalsMetrics, "delta">;
 
 type LargestContentfulPaint = {
-  name: typeof SupportMetrics.LCP;
+  name: typeof SupportedMetrics.LCP;
   entries: ({
     element?: Element;
   } & PerformanceEntry)[];
 };
 
 type FirstInputDelay = {
-  name: typeof SupportMetrics.FID;
+  name: typeof SupportedMetrics.FID;
   entries: FirstInputPolyfillEntry[];
 };
 
@@ -28,7 +28,7 @@ const CLS_RECT_PROPERTIES = ["width", "height", "x", "y"] as const;
 type CLSEntryRect = { [K in typeof CLS_RECT_PROPERTIES[number]]: number };
 
 type CumulativeLayoutShift = {
-  name: typeof SupportMetrics.CLS;
+  name: typeof SupportedMetrics.CLS;
   entries: ({
     value: number;
     sources: {
@@ -40,7 +40,7 @@ type CumulativeLayoutShift = {
 };
 
 type TimeToFirstByte = {
-  name: typeof SupportMetrics.TTFB;
+  name: typeof SupportedMetrics.TTFB;
 };
 
 type Metrics = BaseMetrics &
@@ -107,7 +107,7 @@ const handleReportHandler = (f: ReportHandler) => f as WebVitalsReportHandler;
 
 export const reportCLS: Report = (report) => {
   const reportHandler: ReportHandler = (metrics) => {
-    if (metrics.name !== SupportMetrics.CLS) {
+    if (metrics.name !== SupportedMetrics.CLS) {
       return;
     }
 
@@ -132,7 +132,7 @@ export const reportCLS: Report = (report) => {
 
 export const reportLCP: Report = (report) => {
   const reportHandler: ReportHandler = (metrics) => {
-    if (metrics.name !== SupportMetrics.LCP) {
+    if (metrics.name !== SupportedMetrics.LCP) {
       return;
     }
 
@@ -153,7 +153,7 @@ export const reportLCP: Report = (report) => {
 
 export const reportFID: Report = (report) => {
   const reportHandler: ReportHandler = (metrics) => {
-    if (metrics.name !== SupportMetrics.FID) {
+    if (metrics.name !== SupportedMetrics.FID) {
       return;
     }
 
@@ -175,7 +175,7 @@ export const reportFID: Report = (report) => {
 
 export const reportTTFB: Report = (report) => {
   const reportHandler: ReportHandler = ({ name, delta }) => {
-    if (name !== SupportMetrics.TTFB) {
+    if (name !== SupportedMetrics.TTFB) {
       return;
     }
 
