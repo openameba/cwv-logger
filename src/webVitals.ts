@@ -113,6 +113,10 @@ export const reportCLS: Report = (report) => {
 
     const { name, entries, delta } = metrics;
 
+    /**
+     * To analyze CLS by using some analytics tools, the reported data should be aggregated with largest layout shift source.
+     * @see https://web.dev/debug-web-vitals-in-the-field/#cls
+     */
     const largestSource = getLargestLayoutShiftSource(entries);
     if (!largestSource) {
       return;
