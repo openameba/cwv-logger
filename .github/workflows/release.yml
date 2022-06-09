@@ -56,14 +56,14 @@ jobs:
           HAS_PREID=$(node -p "process.env.VERSION.startsWith('prerelease-') ? 1 : 0")
           echo "::set-output name=has_preid::${HAS_PREID}"
           if [ "$HAS_PREID" -eq 1 ]; then
-            PREID_NAME=$(node -p "const v = process.env.VERSION.match(/^prerelease-(.+)$/); v ? v[1] : ''")
+            PREID_NAME=${VERSION#prerelease-}
             # validate preid
-            IS_ALLOWED=$(node -p "'${ALLOW_PREID}'.split('|').includes('${PREID_NAME}') ? 1 : 0")
-            if [ "$IS_ALLOWED" -eq 0 ]; then
+            if [[ "$PREID_NAME" =~ $ALLOW_PREID ]]; then
+              echo "::set-output name=name::${PREID_NAME}"
+            else
               echo "`${PREID_NAME}` preid is not allowed."
               exit 1
             fi
-            echo "::set-output name=name::${PREID_NAME}"
           fi
         id: preid
         env:
