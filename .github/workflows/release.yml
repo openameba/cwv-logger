@@ -53,10 +53,10 @@ jobs:
         id: extract_branch
       - name: Check npm version preid
         run: |
-          HAS_PREID=$(node -p "'${{ steps.extract_branch.outputs.version }}'.startsWith('prerelease-') ? 1 : 0")
+          HAS_PREID=$(node -p "process.env.VERSION.startsWith('prerelease-') ? 1 : 0")
           echo "::set-output name=has_preid::${HAS_PREID}"
           if [ $HAS_PREID -eq 1 ]; then
-            PREID_NAME=$(node -p "const v = '${{ steps.extract_branch.outputs.version }}'.match(/^prerelease-(.+)$/); v ? v[1] : ''")
+            PREID_NAME=$(node -p "const v = process.env.VERSION.match(/^prerelease-(.+)$/); v ? v[1] : ''")
             # validate preid
             IS_ALLOWED=$(node -p "'${ALLOW_PREID}'.split('|').includes('${PREID_NAME}') ? 1 : 0")
             if [ $IS_ALLOWED -eq 0 ]; then
@@ -66,6 +66,8 @@ jobs:
             echo "::set-output name=name::${PREID_NAME}"
           fi
         id: preid
+        env:
+          VERSION: ${{ steps.extract_branch.outputs.version }}
       - name: Bump a package version
         if: steps.preid.outputs.has_preid == 0
         run: npm version ${{ steps.extract_branch.outputs.version }}
