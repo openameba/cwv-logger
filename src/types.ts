@@ -3,6 +3,7 @@ export const SupportedMetrics = {
   CLS: "CLS",
   FID: "FID",
   TTFB: "TTFB",
+  INP: "INP",
 } as const;
 
 export type ReportParams = {
