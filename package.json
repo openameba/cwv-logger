@@ -21,8 +21,7 @@
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "run-s build:esm:js build:esm:rename",
     "build:esm:js": "tsc -p tsconfig.esm.json",
-    "build:esm:rename": "npx renamer --find js --replace mjs 'dist/**'",
-    "prepublishOnly": "yarn build && yarn cp"
+    "build:esm:rename": "npx renamer --find js --replace mjs 'dist/**'"
   },
   "license": "MIT",
   "dependencies": {
