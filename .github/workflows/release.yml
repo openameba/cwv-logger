@@ -61,7 +61,7 @@ jobs:
             if [[ "$PREID_NAME" =~ $ALLOW_PREID ]]; then
               echo "::set-output name=name::${PREID_NAME}"
             else
-              echo "`${PREID_NAME}` preid is not allowed."
+              echo "'${PREID_NAME}' preid is not allowed."
               exit 1
             fi
           fi
