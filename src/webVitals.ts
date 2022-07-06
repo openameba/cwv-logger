@@ -53,12 +53,9 @@ type Metrics = BaseMetrics &
 
 /**
  * CLSの発生前後の差分を返す
- * @param {String} elementName
- * @param {Array} source
  * @returns {string} elementName:width,height,x,y(, sources分繰り返し)
  */
 function getRectDiff(
-  elementName: string,
   source: CumulativeLayoutShift["entries"][number]["sources"][number]
 ) {
   const { currentRect, previousRect } = source;
@@ -67,7 +64,7 @@ function getRectDiff(
     const diff = currentRect[property] - previousRect[property];
     rectDiff.push(`${diff}`);
   });
-  return `${elementName}:${rectDiff.join(",")}`;
+  return rectDiff.join(",");
 }
 
 function getLargestLayoutShiftSource(
@@ -122,7 +119,7 @@ export const reportCLS: Report = (report) => {
       return;
     }
     const elementName = getElementName(largestSource.node);
-    const rectDiff = getRectDiff(elementName, largestSource);
+    const rectDiff = getRectDiff(largestSource);
     report({
       metricsName: name,
       metricsValue: delta,
