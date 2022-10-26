@@ -215,7 +215,6 @@ export const reportINP: Report<ReportOpts> = (report, option) => {
         metricsValue: delta,
         selectorName: elementName,
         networkType: getNetworkType(),
-        eventName: entry.entryType === "event" ? entry.name : undefined,
       });
     });
   };
