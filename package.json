@@ -1,6 +1,6 @@
 {
   "name": "@openameba/cwv-logger",
-  "version": "0.1.1-beta.3",
+  "version": "0.1.1-beta.4",
   "main": "./index.js",
   "module": "./index.mjs",
   "types": "./index.d.ts",
