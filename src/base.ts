@@ -15,7 +15,9 @@ const isSVGAnimatedString = (
   className: string | SVGAnimatedString
 ): className is SVGAnimatedString => typeof className !== "string";
 
-export const getElementName = (element?: Element) => {
+export const getElementName = (node?: Node | null) => {
+  const element =
+    node?.ELEMENT_NODE == Node.ELEMENT_NODE ? (node as Element) : undefined;
   if (!element) {
     return "";
   }
