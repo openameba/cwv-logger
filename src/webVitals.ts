@@ -1,11 +1,13 @@
 import {
   FirstInputPolyfillEntry,
-  getCLS,
-  getFID,
-  getLCP,
-  getTTFB,
-  ReportHandler as WebVitalsReportHandler,
+  onCLS,
+  onFID,
+  onLCP,
+  onTTFB,
+  onINP,
+  ReportCallback as WebVitalsReportHandler,
   Metric as WebVitalsMetrics,
+  ReportOpts,
 } from "web-vitals";
 import { getElementName, getNetworkType } from "./base";
 import { ReportParams, SupportedMetrics } from "./types";
@@ -43,12 +45,18 @@ type TimeToFirstByte = {
   name: typeof SupportedMetrics.TTFB;
 };
 
+type InteractionToNextPaint = {
+  name: typeof SupportedMetrics.INP;
+  entries: FirstInputPolyfillEntry[];
+};
+
 type Metrics = BaseMetrics &
   (
     | LargestContentfulPaint
     | FirstInputDelay
     | CumulativeLayoutShift
     | TimeToFirstByte
+    | InteractionToNextPaint
   );
 
 /**
@@ -94,7 +102,10 @@ function getLargestLayoutShiftSource(
 
 export type ReportCallback = (params: ReportParams) => void;
 
-type Report = (report: ReportCallback) => void;
+type Report<Option = unknown> = (
+  report: ReportCallback,
+  option?: Option
+) => void;
 
 type ReportHandler = (metrics: Metrics) => void;
 
@@ -128,7 +139,7 @@ export const reportCLS: Report = (report) => {
       rectDiff,
     });
   };
-  getCLS(handleReportHandler(reportHandler));
+  onCLS(handleReportHandler(reportHandler));
 };
 
 export const reportLCP: Report = (report) => {
@@ -149,7 +160,7 @@ export const reportLCP: Report = (report) => {
       });
     });
   };
-  getLCP(handleReportHandler(reportHandler));
+  onLCP(handleReportHandler(reportHandler));
 };
 
 export const reportFID: Report = (report) => {
@@ -171,7 +182,7 @@ export const reportFID: Report = (report) => {
     });
   };
 
-  getFID(handleReportHandler(reportHandler));
+  onFID(handleReportHandler(reportHandler));
 };
 
 export const reportTTFB: Report = (report) => {
@@ -186,5 +197,27 @@ export const reportTTFB: Report = (report) => {
       networkType: getNetworkType(),
     });
   };
-  getTTFB(handleReportHandler(reportHandler));
+  onTTFB(handleReportHandler(reportHandler));
+};
+
+export const reportINP: Report<ReportOpts> = (report, option) => {
+  const reportHandler: ReportHandler = (metrics) => {
+    if (metrics.name !== SupportedMetrics.INP) {
+      return;
+    }
+
+    const { name, entries, delta } = metrics;
+
+    entries.map((entry) => {
+      const elementName = getElementName(entry.target);
+      report({
+        metricsName: name,
+        metricsValue: delta,
+        selectorName: elementName,
+        networkType: getNetworkType(),
+      });
+    });
+  };
+
+  onINP(handleReportHandler(reportHandler), option);
 };

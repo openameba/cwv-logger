@@ -37,11 +37,19 @@ const reportPerformance = () => {
   // Logging is not critical for most application,
   // so you can avoid loading this library in initial bundle by using dynamic import.
   import("@openameba/cwv-logger").then(
-    ({ reportCLS, reportFID, reportLCP, reportTTFB }) => {
+    ({ reportCLS, reportFID, reportLCP, reportTTFB, reportINP }) => {
       reportCLS(handleReport);
       reportFID(handleReport);
       reportLCP(handleReport);
       reportTTFB(handleReport);
+      /**
+       * reportINP has option in second argument.
+       * @see https://github.com/GoogleChrome/web-vitals/tree/next
+       */
+      reportINP(handleReport, {
+        reportAllChanges: false, // or true
+        durationThreshold: 40, // or number
+      });
     }
   );
 };
@@ -53,12 +61,13 @@ const reportPerformance = () => {
 - [Largest Contentful Paint(LCP)](https://web.dev/lcp/)
 - [First Input Delay(FID)](https://web.dev/fid/)
 - [Time to First Byte(TTFB)](https://web.dev/ttfb/)
+- [Interaction to Next Paint(INP)](https://web.dev/inp/)
 
 ## Report params
 
 ```ts
 type ReportParams = {
-  metricsName: "CLS" | "LCP" | "FID" | "TTFB";
+  metricsName: "CLS" | "LCP" | "FID" | "TTFB" | "INP";
   metricsValue: number;
   // Get value from https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation/effectiveType.
   networkType: string;
