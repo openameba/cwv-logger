@@ -5,7 +5,7 @@ import {
   onLCP,
   onTTFB,
   onINP,
-  ReportHandler as WebVitalsReportHandler,
+  ReportCallback as WebVitalsReportHandler,
   Metric as WebVitalsMetrics,
   ReportOpts,
 } from "web-vitals";
