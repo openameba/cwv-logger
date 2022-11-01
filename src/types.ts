@@ -6,11 +6,32 @@ export const SupportedMetrics = {
   INP: "INP",
 } as const;
 
-export type ReportParams = {
-  metricsName: keyof typeof SupportedMetrics;
+type SharedReportParams<T extends keyof typeof SupportedMetrics> = {
+  metricsName: T;
   metricsValue: number;
   networkType: string;
   country?: string;
-  selectorName?: string;
-  rectDiff?: string;
 };
+
+type InteractiveMetricsReportParams = {
+  selectorName?: string;
+};
+
+type LCPReportParams = SharedReportParams<"LCP"> &
+  InteractiveMetricsReportParams;
+type FIDReportParams = SharedReportParams<"FID"> &
+  InteractiveMetricsReportParams;
+type INPReportParams = SharedReportParams<"INP"> &
+  InteractiveMetricsReportParams;
+type CLSReportParams = SharedReportParams<"CLS"> &
+  InteractiveMetricsReportParams & {
+    rectDiff?: string;
+  };
+type TTFBReportParams = SharedReportParams<"TTFB">;
+
+export type ReportParams =
+  | LCPReportParams
+  | FIDReportParams
+  | INPReportParams
+  | CLSReportParams
+  | TTFBReportParams;
