@@ -15,7 +15,15 @@ import {
   MetricWithAttribution,
 } from "web-vitals/attribution";
 import { getElementName, getNetworkType } from "./base";
-import { ReportParams, SupportedMetrics } from "./types";
+import {
+  CLSReportParams,
+  FIDReportParams,
+  INPReportParams,
+  LCPReportParams,
+  ReportParams,
+  SupportedMetrics,
+  TTFBReportParams,
+} from "./types";
 
 type BaseMetrics = Pick<WebVitalsMetrics, "delta">;
 
@@ -111,10 +119,10 @@ function getLargestLayoutShiftSource(
   return null;
 }
 
-export type ReportCallback = (params: ReportParams) => void;
+export type ReportCallback<P extends ReportParams> = (params: P) => void;
 
-type Report<Option = unknown> = (
-  report: ReportCallback,
+type Report<P extends ReportParams, Option = unknown> = (
+  report: ReportCallback<P>,
   option?: Option
 ) => void;
 
@@ -128,7 +136,7 @@ const handleReportHandler = <
   f: ReportHandler
 ) => f as unknown as Handler;
 
-export const reportCLS: Report = (report) => {
+export const reportCLS: Report<CLSReportParams> = (report) => {
   const reportHandler: ReportHandler = (metrics) => {
     if (metrics.name !== SupportedMetrics.CLS) {
       return;
@@ -161,7 +169,7 @@ export const reportCLS: Report = (report) => {
   onCLS(handleReportHandler(reportHandler));
 };
 
-export const reportLCP: Report = (report) => {
+export const reportLCP: Report<LCPReportParams> = (report) => {
   const reportHandler: ReportHandler = (metrics) => {
     if (metrics.name !== SupportedMetrics.LCP) {
       return;
@@ -185,7 +193,7 @@ export const reportLCP: Report = (report) => {
   onLCP(handleReportHandler(reportHandler));
 };
 
-export const reportFID: Report = (report) => {
+export const reportFID: Report<FIDReportParams> = (report) => {
   const reportHandler: ReportHandler = (metrics) => {
     if (metrics.name !== SupportedMetrics.FID) {
       return;
@@ -210,7 +218,7 @@ export const reportFID: Report = (report) => {
   onFID(handleReportHandler(reportHandler));
 };
 
-export const reportTTFB: Report = (report) => {
+export const reportTTFB: Report<TTFBReportParams> = (report) => {
   const reportHandler: ReportHandler = ({ name, delta, attribution }) => {
     if (name !== SupportedMetrics.TTFB) {
       return;
@@ -228,7 +236,10 @@ export const reportTTFB: Report = (report) => {
   onTTFB(handleReportHandler(reportHandler));
 };
 
-export const reportINP: Report<ReportOpts> = (report, option) => {
+export const reportINP: Report<INPReportParams, ReportOpts> = (
+  report,
+  option
+) => {
   const reportHandler: ReportHandler = (metrics) => {
     if (metrics.name !== SupportedMetrics.INP) {
       return;

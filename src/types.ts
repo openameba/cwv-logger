@@ -42,17 +42,17 @@ type InteractiveMetricsReportParams = {
   selectorName?: string;
 };
 
-type LCPReportParams = SharedReportParams<"LCP"> &
+export type LCPReportParams = SharedReportParams<"LCP"> &
   InteractiveMetricsReportParams;
-type FIDReportParams = SharedReportParams<"FID"> &
+export type FIDReportParams = SharedReportParams<"FID"> &
   InteractiveMetricsReportParams;
-type INPReportParams = SharedReportParams<"INP"> &
+export type INPReportParams = SharedReportParams<"INP"> &
   InteractiveMetricsReportParams;
-type CLSReportParams = SharedReportParams<"CLS"> &
+export type CLSReportParams = SharedReportParams<"CLS"> &
   InteractiveMetricsReportParams & {
     rectDiff?: string;
   };
-type TTFBReportParams = SharedReportParams<"TTFB">;
+export type TTFBReportParams = SharedReportParams<"TTFB">;
 
 export type ReportParams =
   | LCPReportParams
