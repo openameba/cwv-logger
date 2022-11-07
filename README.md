@@ -77,6 +77,29 @@ type ReportParams = {
   selectorName?: string;
   // Available only with CLS.
   rectDiff?: string;
+  debug: Debug<T>;
+};
+```
+
+## Debug
+
+The [`attribution`](https://github.com/GoogleChrome/web-vitals/tree/main#metricwithattribution) is provided by `web-vitals` library.
+
+```ts
+// This is unstable property, this should be used only for debug.
+// If you want to monitor these values, please consider to add a new property to the `ReportParams` as stable property.
+type Debug<T extends keyof typeof SupportedMetrics> = {
+  attribution: T extends "LCP"
+    ? LCPAttribution
+    : T extends "CLS"
+    ? CLSAttribution
+    : T extends "FID"
+    ? FIDAttribution
+    : T extends "TTFB"
+    ? TTFBAttribution
+    : T extends "INP"
+    ? INPAttribution
+    : never;
 };
 ```
 
