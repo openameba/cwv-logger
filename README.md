@@ -73,7 +73,7 @@ type ReportParams = {
   networkType: string;
   // Currently not supported
   country?: string;
-  // Available with CLS, LCP and FID.
+  // Available with CLS, LCP, FID and INP.
   selectorName?: string;
   // Available only with CLS.
   rectDiff?: string;
