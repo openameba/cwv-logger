@@ -1,12 +1,15 @@
 {
   "name": "@openameba/cwv-logger",
   "version": "0.2.0",
-  "main": "./index.js",
-  "module": "./index.mjs",
-  "types": "./index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "run-p bundlesize test:unit",
     "test:unit": "jest --passWithNoTests",
@@ -15,7 +18,6 @@
     "prebundlesize": "yarn build",
     "bundlesize": "npx bundlesize",
     "clean": "npx rimraf dist",
-    "cp": "npx cpx 'dist/**/*' .",
     "prebuild": "yarn clean",
     "build": "run-s build:esm build:cjs",
     "build:cjs": "tsc -p tsconfig.cjs.json",

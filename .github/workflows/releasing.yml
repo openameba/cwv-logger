@@ -27,6 +27,7 @@ jobs:
         run: |
           git config --global user.email "<>"
           git config --global user.name "openameba"
+      - run: yarn build
       # Create tag with release note
       - run: npx semantic-release
         env:
