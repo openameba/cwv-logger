@@ -18,7 +18,6 @@
     "prebundlesize": "yarn build",
     "bundlesize": "npx bundlesize",
     "clean": "npx rimraf dist",
-    "cp": "npx cpx 'dist/**/*' .",
     "prebuild": "yarn clean",
     "build": "run-s build:esm build:cjs",
     "build:cjs": "tsc -p tsconfig.cjs.json",
