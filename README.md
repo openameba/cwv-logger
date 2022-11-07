@@ -82,6 +82,8 @@ type ReportParams = {
 
 ## リリースフロー
 
-[.github/workflows/release.yml](https://github.com/openameba/cwv-logger/blob/main/.github/workflows/release.yml)に合わせてバージョニングを指定してbranchを作成し、pushすると自動でリリースできます。
+`main`または`beta`ブランチにマージすることで自動的にリリースされます。
+リリースが完了するとリリースノートも自動的に生成されます。
 
-`@openameba/cwv-logger@beta`のようにタグをつけてリリースしたい場合は[導入ガイド](https://github.com/openameba/cwv-logger/pull/8)を参考にリリース処理を行います。基本的には`release/prerelease-[PRE_ID]`というブランチをpushするとPRE_IDをもとに自動でタグつけされたバージョンでリリースされます。
+基本は`main`ブランチにマージします。
+実験的な機能や大きな変更を含む場合に、`beta`ブランチを通して段階的にリリースします。
