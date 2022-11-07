@@ -121,7 +121,10 @@ type ReportHandler = (metrics: Metrics) => void;
 // その際に既存の型定義と合わせるために、この関数を挟むようにします。
 const handleReportHandler = (f: ReportHandler) => f as WebVitalsReportHandler;
 
-export const reportCLS: Report<CLSReportParams> = (report) => {
+export const reportCLS: Report<
+  CLSReportParams,
+  Pick<ReportOpts, "reportAllChanges">
+> = (report, options) => {
   const reportHandler: ReportHandler = (metrics) => {
     if (metrics.name !== SupportedMetrics.CLS) {
       return;
@@ -147,7 +150,7 @@ export const reportCLS: Report<CLSReportParams> = (report) => {
       rectDiff,
     });
   };
-  onCLS(handleReportHandler(reportHandler));
+  onCLS(handleReportHandler(reportHandler), options);
 };
 
 export const reportLCP: Report<LCPReportParams> = (report) => {
