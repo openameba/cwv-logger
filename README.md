@@ -87,7 +87,7 @@ The [`attribution`](https://github.com/GoogleChrome/web-vitals/tree/main#metricw
 
 ```ts
 // This is unstable property, this should be used only for debug.
-// If you want to monitor these values, please consider to add a new metric to the `ReportParams` as stable property.
+// If you want to monitor these values, please consider to add a new property to the `ReportParams` as stable property.
 type Debug<T extends keyof typeof SupportedMetrics> = {
   attribution: T extends "LCP"
     ? LCPAttribution
