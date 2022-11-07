@@ -77,11 +77,34 @@ type ReportParams = {
   selectorName?: string;
   // Available only with CLS.
   rectDiff?: string;
+  debug: Debug<T>;
+};
+```
+
+## Debug
+
+The [`attribution`](https://github.com/GoogleChrome/web-vitals/tree/main#metricwithattribution) is provided by `web-vitals` library.
+
+```ts
+// This is unstable property, this should be used only for debug.
+// If you want to monitor these values, please consider to add a new metric to the `ReportParams` as stable property.
+type Debug<T extends keyof typeof SupportedMetrics> = {
+  attribution: T extends "LCP"
+    ? LCPAttribution
+    : T extends "CLS"
+    ? CLSAttribution
+    : T extends "FID"
+    ? FIDAttribution
+    : T extends "TTFB"
+    ? TTFBAttribution
+    : T extends "INP"
+    ? INPAttribution
+    : never;
 };
 ```
 
 ## リリースフロー
 
-[.github/workflows/release.yml](https://github.com/openameba/cwv-logger/blob/main/.github/workflows/release.yml)に合わせてバージョニングを指定してbranchを作成し、pushすると自動でリリースできます。
+[.github/workflows/release.yml](https://github.com/openameba/cwv-logger/blob/main/.github/workflows/release.yml)に合わせてバージョニングを指定して branch を作成し、push すると自動でリリースできます。
 
-`@openameba/cwv-logger@beta`のようにタグをつけてリリースしたい場合は[導入ガイド](https://github.com/openameba/cwv-logger/pull/8)を参考にリリース処理を行います。基本的には`release/prerelease-[PRE_ID]`というブランチをpushするとPRE_IDをもとに自動でタグつけされたバージョンでリリースされます。
+`@openameba/cwv-logger@beta`のようにタグをつけてリリースしたい場合は[導入ガイド](https://github.com/openameba/cwv-logger/pull/8)を参考にリリース処理を行います。基本的には`release/prerelease-[PRE_ID]`というブランチを push すると PRE_ID をもとに自動でタグつけされたバージョンでリリースされます。
