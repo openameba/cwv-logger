@@ -5,10 +5,15 @@ import {
   onLCP,
   onTTFB,
   onINP,
-  ReportCallback as WebVitalsReportHandler,
   Metric as WebVitalsMetrics,
   ReportOpts,
-} from "web-vitals";
+  LCPAttribution,
+  FIDAttribution,
+  CLSAttribution,
+  INPAttribution,
+  TTFBAttribution,
+  MetricWithAttribution,
+} from "web-vitals/attribution";
 import { getElementName, getNetworkType } from "./base";
 import { ReportParams, SupportedMetrics } from "./types";
 
@@ -19,11 +24,13 @@ type LargestContentfulPaint = {
   entries: ({
     element?: Element;
   } & PerformanceEntry)[];
+  attribution: LCPAttribution;
 };
 
 type FirstInputDelay = {
   name: typeof SupportedMetrics.FID;
   entries: FirstInputPolyfillEntry[];
+  attribution: FIDAttribution;
 };
 
 const CLS_RECT_PROPERTIES = ["width", "height", "x", "y"] as const;
@@ -39,15 +46,18 @@ type CumulativeLayoutShift = {
       previousRect: CLSEntryRect;
     }[];
   } & PerformanceEntry)[];
+  attribution: CLSAttribution;
 };
 
 type TimeToFirstByte = {
   name: typeof SupportedMetrics.TTFB;
+  attribution: TTFBAttribution;
 };
 
 type InteractionToNextPaint = {
   name: typeof SupportedMetrics.INP;
   entries: FirstInputPolyfillEntry[];
+  attribution: INPAttribution;
 };
 
 type Metrics = BaseMetrics &
@@ -63,9 +73,10 @@ type Metrics = BaseMetrics &
  * CLSの発生前後の差分を返す
  * @returns {string} elementName:width,height,x,y(, sources分繰り返し)
  */
-function getRectDiff(
-  source: CumulativeLayoutShift["entries"][number]["sources"][number]
-) {
+function getRectDiff(source: LayoutShiftAttribution | undefined) {
+  if (!source) {
+    return;
+  }
   const { currentRect, previousRect } = source;
   const rectDiff: string[] = [];
   CLS_RECT_PROPERTIES.forEach((property) => {
@@ -94,7 +105,7 @@ function getLargestLayoutShiftSource(
         : b;
     });
     if (largestSource) {
-      return largestSource;
+      return largestSource as LayoutShiftAttribution;
     }
   }
   return null;
@@ -111,7 +122,11 @@ type ReportHandler = (metrics: Metrics) => void;
 
 // web-vitalsの型定義が微妙なので独自の型定義を使います。
 // その際に既存の型定義と合わせるために、この関数を挟むようにします。
-const handleReportHandler = (f: ReportHandler) => f as WebVitalsReportHandler;
+const handleReportHandler = <
+  Handler extends (metrics: MetricWithAttribution) => void
+>(
+  f: ReportHandler
+) => f as unknown as Handler;
 
 export const reportCLS: Report = (report) => {
   const reportHandler: ReportHandler = (metrics) => {
@@ -119,13 +134,14 @@ export const reportCLS: Report = (report) => {
       return;
     }
 
-    const { name, entries, delta } = metrics;
+    const { name, delta, entries, attribution } = metrics;
 
     /**
      * To analyze CLS by using some analytics tools, the reported data should be aggregated with largest layout shift source.
      * @see https://web.dev/debug-web-vitals-in-the-field/#cls
      */
-    const largestSource = getLargestLayoutShiftSource(entries);
+    const largestSource =
+      attribution.largestShiftSource || getLargestLayoutShiftSource(entries);
     if (!largestSource) {
       return;
     }
@@ -134,9 +150,12 @@ export const reportCLS: Report = (report) => {
     report({
       metricsName: name,
       metricsValue: delta,
-      selectorName: elementName,
+      selectorName: attribution.largestShiftTarget || elementName,
       networkType: getNetworkType(),
       rectDiff,
+      debug: {
+        attribution,
+      },
     });
   };
   onCLS(handleReportHandler(reportHandler));
@@ -148,15 +167,18 @@ export const reportLCP: Report = (report) => {
       return;
     }
 
-    const { name, entries, delta } = metrics;
+    const { name, entries, delta, attribution } = metrics;
 
     entries.map((entry) => {
       const elementName = getElementName(entry.element);
       report({
         metricsName: name,
         metricsValue: delta,
-        selectorName: elementName,
+        selectorName: attribution.element || elementName,
         networkType: getNetworkType(),
+        debug: {
+          attribution,
+        },
       });
     });
   };
@@ -169,15 +191,18 @@ export const reportFID: Report = (report) => {
       return;
     }
 
-    const { name, entries, delta } = metrics;
+    const { name, entries, delta, attribution } = metrics;
 
     entries.map((entry) => {
       const elementName = getElementName(entry.target);
       report({
         metricsName: name,
         metricsValue: delta,
-        selectorName: elementName,
+        selectorName: attribution.eventTarget || elementName,
         networkType: getNetworkType(),
+        debug: {
+          attribution,
+        },
       });
     });
   };
@@ -186,7 +211,7 @@ export const reportFID: Report = (report) => {
 };
 
 export const reportTTFB: Report = (report) => {
-  const reportHandler: ReportHandler = ({ name, delta }) => {
+  const reportHandler: ReportHandler = ({ name, delta, attribution }) => {
     if (name !== SupportedMetrics.TTFB) {
       return;
     }
@@ -195,6 +220,9 @@ export const reportTTFB: Report = (report) => {
       metricsName: name,
       metricsValue: delta,
       networkType: getNetworkType(),
+      debug: {
+        attribution,
+      },
     });
   };
   onTTFB(handleReportHandler(reportHandler));
@@ -206,15 +234,18 @@ export const reportINP: Report<ReportOpts> = (report, option) => {
       return;
     }
 
-    const { name, entries, delta } = metrics;
+    const { name, entries, delta, attribution } = metrics;
 
     entries.map((entry) => {
       const elementName = getElementName(entry.target);
       report({
         metricsName: name,
         metricsValue: delta,
-        selectorName: elementName,
+        selectorName: attribution.eventTarget || elementName,
         networkType: getNetworkType(),
+        debug: {
+          attribution,
+        },
       });
     });
   };
