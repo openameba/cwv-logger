@@ -20,36 +20,77 @@ npm i --save-dev @openameba/cwv-logger
 const reportPerformance = () => {
   const startTime = Date.now();
 
-  const handleReport: ReportCallback = useCallback(
-    ({ metricsName, metricsValue, networkType, selectorName, rectDiff }) => {
-      firebase
-        .performance()
-        .trace(metricsName)
-        .record(startTime, metricsValue, {
-          selectorName,
-          networkType,
-          rectDiff,
-        });
-    },
-    [option]
-  );
-
   // Logging is not critical for most application,
   // so you can avoid loading this library in initial bundle by using dynamic import.
   import("@openameba/cwv-logger").then(
     ({ reportCLS, reportFID, reportLCP, reportTTFB, reportINP }) => {
-      reportCLS(handleReport);
-      reportFID(handleReport);
-      reportLCP(handleReport);
-      reportTTFB(handleReport);
+      reportCLS(
+        ({
+          metricsName,
+          metricsValue,
+          networkType,
+          selectorName,
+          rectDiff,
+        }) => {
+          firebase
+            .performance()
+            .trace(metricsName)
+            .record(startTime, metricsValue, {
+              selectorName,
+              networkType,
+              rectDiff,
+            });
+        },
+        {
+          reportAllChanges: false, // or true
+          durationThreshold: 40, // or number
+        }
+      );
+      reportFID(({ metricsName, metricsValue, networkType, selectorName }) => {
+        firebase
+          .performance()
+          .trace(metricsName)
+          .record(startTime, metricsValue, {
+            selectorName,
+            networkType,
+          });
+      });
+      reportLCP(({ metricsName, metricsValue, networkType, selectorName }) => {
+        firebase
+          .performance()
+          .trace(metricsName)
+          .record(startTime, metricsValue, {
+            selectorName,
+            networkType,
+          });
+      });
+      reportTTFB(({ metricsName, metricsValue, networkType }) => {
+        firebase
+          .performance()
+          .trace(metricsName)
+          .record(startTime, metricsValue, {
+            networkType,
+          });
+      });
       /**
        * reportINP has option in second argument.
        * @see https://github.com/GoogleChrome/web-vitals/tree/next
        */
-      reportINP(handleReport, {
-        reportAllChanges: false, // or true
-        durationThreshold: 40, // or number
-      });
+      reportINP(
+        ({ metricsName, metricsValue, networkType, selectorName }) => {
+          firebase
+            .performance()
+            .trace(metricsName)
+            .record(startTime, metricsValue, {
+              selectorName,
+              networkType,
+            });
+        },
+        {
+          reportAllChanges: false, // or true
+          durationThreshold: 40, // or number
+        }
+      );
     }
   );
 };
