@@ -24,6 +24,10 @@ const reportPerformance = () => {
   // so you can avoid loading this library in initial bundle by using dynamic import.
   import("@openameba/cwv-logger").then(
     ({ reportCLS, reportFID, reportLCP, reportTTFB, reportINP }) => {
+      /**
+       * reportCLS has option in second argument.
+       * @see https://github.com/GoogleChrome/web-vitals/tree/main#oncls
+       */
       reportCLS(
         ({
           metricsName,
@@ -74,7 +78,7 @@ const reportPerformance = () => {
       });
       /**
        * reportINP has option in second argument.
-       * @see https://github.com/GoogleChrome/web-vitals/tree/next
+       * @see https://github.com/GoogleChrome/web-vitals/tree/main#oninp
        */
       reportINP(
         ({ metricsName, metricsValue, networkType, selectorName }) => {
