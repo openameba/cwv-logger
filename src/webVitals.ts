@@ -7,9 +7,10 @@ import {
   onINP,
   ReportCallback as WebVitalsReportHandler,
   Metric as WebVitalsMetrics,
-  ReportOpts,
+  ReportOpts as WebVitalsReportOps,
 } from "web-vitals";
 import { getElementName, getNetworkType } from "./base";
+import { onReportOnSPA, storeReportParams } from "./spa";
 import {
   CLSReportParams,
   FIDReportParams,
@@ -121,9 +122,13 @@ type ReportHandler = (metrics: Metrics) => void;
 // その際に既存の型定義と合わせるために、この関数を挟むようにします。
 const handleReportHandler = (f: ReportHandler) => f as WebVitalsReportHandler;
 
+// TODO: Remove `experimental_useSPA` when the following issue is resolved.
+// https://github.com/GoogleChrome/web-vitals/issues/119
+type ReportOpts = WebVitalsReportOps & { experimental_useSpa?: boolean };
+
 export const reportCLS: Report<
   CLSReportParams,
-  Pick<ReportOpts, "reportAllChanges">
+  Pick<ReportOpts, "reportAllChanges" | "experimental_useSpa">
 > = (report, options) => {
   const reportHandler: ReportHandler = (metrics) => {
     if (metrics.name !== SupportedMetrics.CLS) {
@@ -142,15 +147,40 @@ export const reportCLS: Report<
     }
     const elementName = getElementName(largestSource.node);
     const rectDiff = getRectDiff(largestSource);
-    report({
-      metricsName: name,
-      metricsValue: delta,
-      selectorName: elementName,
-      networkType: getNetworkType(),
-      rectDiff,
-    });
+    if (options?.experimental_useSpa) {
+      storeReportParams(name, delta, [
+        {
+          metricsName: name,
+          metricsValue: delta,
+          selectorName: elementName,
+          networkType: getNetworkType(),
+          rectDiff,
+        },
+      ]);
+    } else {
+      report({
+        metricsName: name,
+        metricsValue: delta,
+        selectorName: elementName,
+        networkType: getNetworkType(),
+        rectDiff,
+      });
+    }
   };
-  onCLS(handleReportHandler(reportHandler), options);
+
+  if (options?.experimental_useSpa) {
+    onReportOnSPA((params) => {
+      if (params.metricsName !== "CLS") {
+        return;
+      }
+      report(params);
+    });
+  }
+
+  onCLS(handleReportHandler(reportHandler), {
+    ...options,
+    reportAllChanges: options?.reportAllChanges || options?.experimental_useSpa,
+  });
 };
 
 export const reportLCP: Report<LCPReportParams> = (report) => {
@@ -211,10 +241,13 @@ export const reportTTFB: Report<TTFBReportParams> = (report) => {
   onTTFB(handleReportHandler(reportHandler));
 };
 
-export const reportINP: Report<INPReportParams, ReportOpts> = (
-  report,
-  option
-) => {
+export const reportINP: Report<
+  INPReportParams,
+  Pick<
+    ReportOpts,
+    "reportAllChanges" | "durationThreshold" | "experimental_useSpa"
+  >
+> = (report, options) => {
   const reportHandler: ReportHandler = (metrics) => {
     if (metrics.name !== SupportedMetrics.INP) {
       return;
@@ -222,16 +255,34 @@ export const reportINP: Report<INPReportParams, ReportOpts> = (
 
     const { name, entries, delta } = metrics;
 
-    entries.map((entry) => {
+    const result = entries.map((entry) => {
       const elementName = getElementName(entry.target);
-      report({
+      return {
         metricsName: name,
         metricsValue: delta,
         selectorName: elementName,
         networkType: getNetworkType(),
-      });
+      };
     });
+
+    if (options?.experimental_useSpa) {
+      storeReportParams(name, delta, result);
+    } else {
+      result.forEach((p) => report(p));
+    }
   };
 
-  onINP(handleReportHandler(reportHandler), option);
+  if (options?.experimental_useSpa) {
+    onReportOnSPA((params) => {
+      if (params.metricsName !== "INP") {
+        return;
+      }
+      report(params);
+    });
+  }
+
+  onINP(handleReportHandler(reportHandler), {
+    ...options,
+    reportAllChanges: options?.reportAllChanges || options?.experimental_useSpa,
+  });
 };
