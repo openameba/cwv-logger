@@ -20,9 +20,13 @@ type InteractiveMetricsReportParams = {
 export type LCPReportParams = SharedReportParams<"LCP"> &
   InteractiveMetricsReportParams;
 export type FIDReportParams = SharedReportParams<"FID"> &
-  InteractiveMetricsReportParams;
+  InteractiveMetricsReportParams & {
+    eventTime?: number;
+  };
 export type INPReportParams = SharedReportParams<"INP"> &
-  InteractiveMetricsReportParams;
+  InteractiveMetricsReportParams & {
+    eventTime?: number;
+  };
 export type CLSReportParams = SharedReportParams<"CLS"> &
   InteractiveMetricsReportParams & {
     rectDiff?: string;
