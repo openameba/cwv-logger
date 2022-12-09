@@ -120,6 +120,8 @@ type ReportParams = {
   country?: string;
   // Available with CLS, LCP, FID and INP.
   selectorName?: string;
+  // Available only with FID and INP.
+  eventTime?: string;
   // Available only with CLS.
   rectDiff?: string;
 };
