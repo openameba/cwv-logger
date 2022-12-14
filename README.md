@@ -122,6 +122,9 @@ type ReportParams = {
   selectorName?: string;
   // Available only with FID and INP.
   eventTime?: string;
+  // Available only with FID and INP.
+  // @see: https://github.com/GoogleChrome/web-vitals#loadstate
+  loadState?: 'loading' | 'dom-interactive' | 'dom-content-loaded' | 'complete';
   // Available only with CLS.
   rectDiff?: string;
 };
