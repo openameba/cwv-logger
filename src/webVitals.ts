@@ -194,6 +194,7 @@ export const reportFID: Report<FIDReportParams> = (report) => {
         selectorName: elementName,
         networkType: getNetworkType(),
         eventTime: attribution.eventTime,
+        loadState: attribution.loadState,
       });
     });
   };
@@ -235,6 +236,7 @@ export const reportINP: Report<INPReportParams, ReportOpts> = (
         selectorName: elementName,
         networkType: getNetworkType(),
         eventTime: attribution.eventTime,
+        loadState: attribution.loadState,
       });
     });
   };
