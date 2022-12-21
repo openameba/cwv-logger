@@ -1,3 +1,5 @@
+import type { LoadState } from "web-vitals";
+
 export const SupportedMetrics = {
   LCP: "LCP",
   CLS: "CLS",
@@ -20,9 +22,15 @@ type InteractiveMetricsReportParams = {
 export type LCPReportParams = SharedReportParams<"LCP"> &
   InteractiveMetricsReportParams;
 export type FIDReportParams = SharedReportParams<"FID"> &
-  InteractiveMetricsReportParams;
+  InteractiveMetricsReportParams & {
+    eventTime?: number;
+    loadState?: LoadState;
+  };
 export type INPReportParams = SharedReportParams<"INP"> &
-  InteractiveMetricsReportParams;
+  InteractiveMetricsReportParams & {
+    eventTime?: number;
+    loadState?: LoadState;
+  };
 export type CLSReportParams = SharedReportParams<"CLS"> &
   InteractiveMetricsReportParams & {
     rectDiff?: string;

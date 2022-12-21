@@ -1,14 +1,16 @@
 import {
   FirstInputPolyfillEntry,
   onCLS,
-  onFID,
   onLCP,
   onTTFB,
-  onINP,
   ReportCallback as WebVitalsReportHandler,
   Metric as WebVitalsMetrics,
   ReportOpts,
+  FIDMetricWithAttribution,
+  INPMetricWithAttribution,
 } from "web-vitals";
+// NOTE: use attribution build to measure more details of performance event
+import { onFID, onINP } from "web-vitals/attribution";
 import { getElementName, getNetworkType } from "./base";
 import {
   CLSReportParams,
@@ -32,6 +34,7 @@ type LargestContentfulPaint = {
 type FirstInputDelay = {
   name: typeof SupportedMetrics.FID;
   entries: FirstInputPolyfillEntry[];
+  attribution: FIDMetricWithAttribution["attribution"];
 };
 
 const CLS_RECT_PROPERTIES = ["width", "height", "x", "y"] as const;
@@ -56,6 +59,7 @@ type TimeToFirstByte = {
 type InteractionToNextPaint = {
   name: typeof SupportedMetrics.INP;
   entries: FirstInputPolyfillEntry[];
+  attribution: INPMetricWithAttribution["attribution"];
 };
 
 type Metrics = BaseMetrics &
@@ -180,7 +184,7 @@ export const reportFID: Report<FIDReportParams> = (report) => {
       return;
     }
 
-    const { name, entries, delta } = metrics;
+    const { name, entries, delta, attribution } = metrics;
 
     entries.map((entry) => {
       const elementName = getElementName(entry.target);
@@ -189,6 +193,8 @@ export const reportFID: Report<FIDReportParams> = (report) => {
         metricsValue: delta,
         selectorName: elementName,
         networkType: getNetworkType(),
+        eventTime: attribution.eventTime,
+        loadState: attribution.loadState,
       });
     });
   };
@@ -220,7 +226,7 @@ export const reportINP: Report<INPReportParams, ReportOpts> = (
       return;
     }
 
-    const { name, entries, delta } = metrics;
+    const { name, entries, delta, attribution } = metrics;
 
     entries.map((entry) => {
       const elementName = getElementName(entry.target);
@@ -229,6 +235,8 @@ export const reportINP: Report<INPReportParams, ReportOpts> = (
         metricsValue: delta,
         selectorName: elementName,
         networkType: getNetworkType(),
+        eventTime: attribution.eventTime,
+        loadState: attribution.loadState,
       });
     });
   };
