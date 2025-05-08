@@ -1,4 +1,8 @@
-# cwv-logger
+# DEPRECATED
+
+This repository is no longer maintained.
+
+---
 
 [web-vitals](https://github.com/GoogleChrome/web-vitals/tree/next)から取得した Core Web Vitals のメトリクスをデータとして使いやすい形式に変換して出力するライブラリです。
 
